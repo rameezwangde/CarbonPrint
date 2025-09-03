@@ -1,0 +1,17 @@
+Use server.prod.js for real embedding.
+
+Steps:
+1. Copy .env.template → .env
+2. Fill in TENANT_ID, CLIENT_ID, CLIENT_SECRET, WORKSPACE_ID, REPORT_ID, DATASET_ID
+3. Install backend deps:
+   npm i dotenv axios @azure/msal-node
+4. Run backend:
+   node server.prod.js
+5. In another terminal, run frontend:
+   npm run dev
+6. Open http://localhost:5173/dashboard
+
+Notes:
+- Vite dev proxy already points /api → http://localhost:4000
+- Health check: http://localhost:4000/api/health
+- Embed config: http://localhost:4000/api/pbi/embed-config
