@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiService } from '../services/apiService';
-import { useDataContext } from '../contexts/DataContext';
 
 interface ComparisonData {
   user: {
@@ -54,11 +53,7 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
   const [selectedBar, setSelectedBar] = useState<string | null>(null);
   const [showBreakdown, setShowBreakdown] = useState(false);
 
-  useEffect(() => {
-    loadPeerComparisonData();
-  }, [userEmissions, city, area]);
-
-  const loadPeerComparisonData = async () => {
+  const loadPeerComparisonData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -100,7 +95,11 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [userEmissions, city, area]);
+
+  useEffect(() => {
+    loadPeerComparisonData();
+  }, [loadPeerComparisonData]);
 
   const handleBarClick = (barType: string) => {
     setSelectedBar(barType);
@@ -177,13 +176,86 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
 
   
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Dynamic Background Effects */}
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Enhanced Dynamic Background Effects */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-32 right-20 w-64 h-64 bg-gradient-to-r from-emerald-400/25 to-cyan-400/25 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-gradient-to-r from-pink-400/20 to-orange-400/20 rounded-full blur-3xl animate-pulse delay-500"></div>
-        <div className="absolute top-1/2 right-1/4 w-56 h-56 bg-gradient-to-r from-yellow-400/15 to-red-400/15 rounded-full blur-2xl animate-pulse delay-1500"></div>
+        <motion.div 
+          className="absolute top-10 left-10 w-96 h-96 bg-gradient-to-r from-violet-500/20 to-purple-500/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="absolute top-32 right-20 w-80 h-80 bg-gradient-to-r from-cyan-400/25 to-blue-400/25 rounded-full blur-3xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.4, 0.7, 0.4],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-20 left-1/3 w-96 h-96 bg-gradient-to-r from-rose-400/20 to-pink-400/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.2, 0.5, 0.2],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 4
+          }}
+        />
+        <motion.div 
+          className="absolute top-1/2 right-1/4 w-72 h-72 bg-gradient-to-r from-amber-400/15 to-orange-400/15 rounded-full blur-2xl"
+          animate={{
+            scale: [1.1, 1, 1.1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        />
+        {/* Additional floating elements */}
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-4 h-4 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full"
+          animate={{
+            y: [0, -20, 0],
+            opacity: [0.4, 0.8, 0.4],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-1/3 right-1/3 w-6 h-6 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full"
+          animate={{
+            y: [0, 15, 0],
+            opacity: [0.3, 0.7, 0.3],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        />
       </div>
 
       {/* Floating Cards Layout */}
@@ -198,17 +270,33 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
         >
           {/* User Card */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-            <div className="relative bg-white/15 backdrop-blur-xl border border-white/25 rounded-3xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105">
-              <div className="text-center">
-                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                  YOU
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Your Emissions</h3>
-                <div className="text-4xl font-black text-gray-900 mb-2">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 to-purple-500/30 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+            <div className="relative bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105">
+              {/* Glassmorphism overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-3xl pointer-events-none"></div>
+              <div className="text-center relative z-10">
+                <motion.div 
+                  className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-2xl"
+                  animate={{
+                    rotate: [0, 5, -5, 0],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  👤
+                </motion.div>
+                <h3 className="text-3xl font-black bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-3">Your Impact</h3>
+                <div className="text-5xl font-black bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">
                   {comparisonData?.user.emissions || 0}
                 </div>
-                <div className="text-gray-600 font-medium">kg CO2/month</div>
+                <div className="text-gray-700 font-semibold text-lg">kg CO₂/month</div>
+                <div className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full border border-indigo-200">
+                  <span className="text-indigo-700 font-medium text-sm">🌱 Personal Carbon Footprint</span>
+                </div>
               </div>
             </div>
           </div>
@@ -222,11 +310,14 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
                 transition={{ delay: 0.4 }}
                 className="relative group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
-                <div className="relative bg-white/15 backdrop-blur-xl border border-white/25 rounded-2xl p-4 shadow-xl">
-                  <div className="flex items-center">
-                    <span className="text-2xl mr-3">⚠️</span>
-                    <span className="text-orange-800 font-semibold text-sm">{insights.area_message}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/25 to-orange-500/25 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                <div className="relative bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl p-5 shadow-xl">
+                  <div className="flex items-start">
+                    <div className="text-3xl mr-4 animate-pulse">📈</div>
+                    <div>
+                      <div className="text-amber-800 font-bold text-sm mb-1">Area Comparison</div>
+                      <span className="text-amber-900 font-semibold text-sm leading-relaxed">{insights.area_message}</span>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -237,11 +328,14 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
                 transition={{ delay: 0.5 }}
                 className="relative group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-pink-500/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
-                <div className="relative bg-white/15 backdrop-blur-xl border border-white/25 rounded-2xl p-4 shadow-xl">
-                  <div className="flex items-center">
-                    <span className="text-2xl mr-3">📊</span>
-                    <span className="text-red-800 font-semibold text-sm">{insights.city_message}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-rose-500/25 to-pink-500/25 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                <div className="relative bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl p-5 shadow-xl">
+                  <div className="flex items-start">
+                    <div className="text-3xl mr-4 animate-pulse">🏙️</div>
+                    <div>
+                      <div className="text-rose-800 font-bold text-sm mb-1">City Comparison</div>
+                      <span className="text-rose-900 font-semibold text-sm leading-relaxed">{insights.city_message}</span>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -257,15 +351,26 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
           className="lg:col-span-2"
         >
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-            <div className="relative bg-white/15 backdrop-blur-xl border border-white/25 rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-500">
-              {/* Glassmorphism overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5 rounded-3xl pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/25 to-cyan-500/25 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+            <div className="relative bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-500">
+              {/* Enhanced Glassmorphism overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-3xl pointer-events-none"></div>
               <div className="text-center mb-8 relative z-10">
-                <h3 className="text-4xl font-black bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-3">
-                  Community Comparison
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.6 }}
+                  className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full mb-4 shadow-2xl"
+                >
+                  <span className="text-3xl">📊</span>
+                </motion.div>
+                <h3 className="text-5xl font-black bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-4">
+                  Community Insights
                 </h3>
-                <p className="text-gray-700 text-lg font-medium">Interactive comparison with your community</p>
+                <p className="text-gray-700 text-xl font-semibold">Compare your impact with your community</p>
+                <div className="mt-4 inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-100 to-cyan-100 rounded-full border border-emerald-200">
+                  <span className="text-emerald-700 font-medium">🎯 Interactive Data Visualization</span>
+                </div>
               </div>
 
               {/* Interactive Bar Chart */}
@@ -299,7 +404,7 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
                       dataKey="emissions" 
                       radius={[16, 16, 0, 0]}
                       cursor="pointer"
-                      onClick={(data) => handleBarClick(data.type)}
+                      onClick={(data) => handleBarClick(data.type || 'user')}
                     >
                       {chartData.map((entry, index) => (
                         <Cell 
@@ -313,12 +418,14 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
                             transformOrigin: 'bottom'
                           }}
                           onMouseEnter={(e) => {
-                            e.target.style.transform = 'scale(1.08)';
-                            e.target.style.filter = 'drop-shadow(0 16px 32px rgba(0,0,0,0.3))';
+                            const target = e.target as HTMLElement;
+                            target.style.transform = 'scale(1.08)';
+                            target.style.filter = 'drop-shadow(0 16px 32px rgba(0,0,0,0.3))';
                           }}
                           onMouseLeave={(e) => {
-                            e.target.style.transform = 'scale(1)';
-                            e.target.style.filter = 'drop-shadow(0 12px 24px rgba(0,0,0,0.2))';
+                            const target = e.target as HTMLElement;
+                            target.style.transform = 'scale(1)';
+                            target.style.filter = 'drop-shadow(0 12px 24px rgba(0,0,0,0.2))';
                           }}
                         />
                       ))}
@@ -327,13 +434,30 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
                 </ResponsiveContainer>
               </div>
 
-              {/* Click Instructions */}
+              {/* Enhanced Click Instructions */}
               <div className="text-center mt-8 relative z-10">
-                <div className="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full shadow-lg">
-                  <span className="text-gray-700 text-sm font-semibold">
-                    🖱️ Click on any bar to see detailed breakdown
+                <motion.div 
+                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-white/25 to-white/15 backdrop-blur-sm border border-white/40 rounded-full shadow-xl"
+                  animate={{
+                    scale: [1, 1.02, 1],
+                    boxShadow: [
+                      "0 10px 25px rgba(0,0,0,0.1)",
+                      "0 15px 35px rgba(0,0,0,0.15)",
+                      "0 10px 25px rgba(0,0,0,0.1)"
+                    ]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <span className="text-2xl mr-3">🖱️</span>
+                  <span className="text-gray-800 text-lg font-bold">
+                    Click any bar for detailed breakdown
                   </span>
-                </div>
+                  <span className="text-2xl ml-3">✨</span>
+                </motion.div>
               </div>
             </div>
           </div>
@@ -348,22 +472,37 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
         >
           {/* Area Average Card */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
             <div 
-              className="relative bg-white/15 backdrop-blur-xl border border-white/25 rounded-3xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 cursor-pointer"
+              className="relative bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 cursor-pointer"
               onClick={() => handleBarClick('area')}
             >
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-lg">
-                  {area?.charAt(0) || 'A'}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{area} Average</h3>
-                <div className="text-3xl font-black text-gray-900 mb-2">
+              {/* Glassmorphism overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-3xl pointer-events-none"></div>
+              <div className="text-center relative z-10">
+                <motion.div 
+                  className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-2xl"
+                  animate={{
+                    rotate: [0, -5, 5, 0],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  🏘️
+                </motion.div>
+                <h3 className="text-2xl font-black bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-3">{area} Average</h3>
+                <div className="text-4xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-3">
                   {comparisonData?.area_avg.emissions || 0}
                 </div>
-                <div className="text-gray-600 font-medium text-sm">kg CO2/month</div>
-                <div className="mt-3 text-sm font-semibold text-green-700">
+                <div className="text-gray-700 font-semibold text-lg mb-4">kg CO₂/month</div>
+                <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-full border border-emerald-200">
+                  <span className="text-emerald-700 font-bold text-sm">
                   {comparisonData?.area_avg.percentage_diff > 0 ? '+' : ''}{comparisonData?.area_avg.percentage_diff || 0}% vs You
+                  </span>
                 </div>
               </div>
             </div>
@@ -371,22 +510,38 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
 
           {/* City Average Card */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/30 to-orange-500/30 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
             <div 
-              className="relative bg-white/15 backdrop-blur-xl border border-white/25 rounded-3xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 cursor-pointer"
+              className="relative bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 cursor-pointer"
               onClick={() => handleBarClick('city')}
             >
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-lg">
-                  {city?.charAt(0) || 'C'}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{city} Average</h3>
-                <div className="text-3xl font-black text-gray-900 mb-2">
+              {/* Glassmorphism overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-3xl pointer-events-none"></div>
+              <div className="text-center relative z-10">
+                <motion.div 
+                  className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-2xl"
+                  animate={{
+                    rotate: [0, 5, -5, 0],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1
+                  }}
+                >
+                  🏙️
+                </motion.div>
+                <h3 className="text-2xl font-black bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-3">{city} Average</h3>
+                <div className="text-4xl font-black bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent mb-3">
                   {comparisonData?.city_avg.emissions || 0}
                 </div>
-                <div className="text-gray-600 font-medium text-sm">kg CO2/month</div>
-                <div className="mt-3 text-sm font-semibold text-amber-700">
+                <div className="text-gray-700 font-semibold text-lg mb-4">kg CO₂/month</div>
+                <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full border border-amber-200">
+                  <span className="text-amber-700 font-bold text-sm">
                   {comparisonData?.city_avg.percentage_diff > 0 ? '+' : ''}{comparisonData?.city_avg.percentage_diff || 0}% vs You
+                  </span>
                 </div>
               </div>
             </div>
@@ -394,72 +549,107 @@ const PeerComparisonChart: React.FC<PeerComparisonProps> = ({
         </motion.div>
       </div>
 
-      {/* Detailed Breakdown Modal */}
+      {/* Enhanced Detailed Breakdown Modal */}
       <AnimatePresence>
         {showBreakdown && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4"
             onClick={() => setShowBreakdown(false)}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 20 }}
-              className="relative bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl"
+              className="relative bg-white/25 backdrop-blur-xl border border-white/40 rounded-3xl p-8 max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%)',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.2) 100%)',
+                boxShadow: '0 32px 64px -12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Glassmorphism overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5 rounded-3xl pointer-events-none"></div>
-              <div className="flex justify-between items-center mb-6 relative z-10">
-                <h3 className="text-3xl font-black text-gray-900 drop-shadow-sm">
+              {/* Enhanced Glassmorphism overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-3xl pointer-events-none"></div>
+              <div className="flex justify-between items-center mb-8 relative z-10">
+                <div className="flex items-center space-x-4">
+                  <motion.div
+                    className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-2xl"
+                    animate={{
+                      rotate: [0, 10, -10, 0],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    📊
+                  </motion.div>
+                  <h3 className="text-4xl font-black bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent drop-shadow-sm">
                   {selectedBar === 'area' ? `${area} Breakdown` : `${city} Breakdown`}
                 </h3>
+                </div>
                 <button
                   onClick={() => setShowBreakdown(false)}
-                  className="text-gray-600 hover:text-gray-800 text-3xl transition-all duration-200 hover:scale-110 p-2 rounded-full hover:bg-white/20"
+                  className="text-gray-600 hover:text-gray-800 text-4xl transition-all duration-200 hover:scale-110 p-3 rounded-full hover:bg-white/30 shadow-lg"
                 >
                   ×
                 </button>
               </div>
 
               {getBreakdownData() && (
-                <div className="space-y-6 relative z-10">
-                  <p className="text-gray-700 text-lg mb-6 font-medium">
-                    Average CO2 emissions by category in {selectedBar === 'area' ? area : city}
-                  </p>
+                <div className="space-y-8 relative z-10">
+                  <div className="text-center mb-8">
+                    <p className="text-gray-800 text-xl font-semibold mb-2">
+                      Average CO₂ emissions by category in {selectedBar === 'area' ? area : city}
+                    </p>
+                    <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full border border-indigo-200">
+                      <span className="text-indigo-700 font-medium">📈 Detailed Analysis</span>
+                    </div>
+                  </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {formatBreakdownData(getBreakdownData()!).map((item, index) => (
                       <motion.div
                         key={item.name}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="relative flex items-center p-5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl overflow-hidden group hover:bg-white/25 transition-all duration-300"
+                        initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ delay: index * 0.1, duration: 0.5 }}
+                        className="relative flex items-center p-6 bg-white/25 backdrop-blur-sm border border-white/40 rounded-3xl overflow-hidden group hover:bg-white/30 transition-all duration-300 hover:scale-105"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%)',
-                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                          background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.2) 100%)',
+                          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
                         }}
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <div 
-                          className="w-5 h-5 rounded-full mr-4 shadow-lg"
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <motion.div 
+                          className="w-6 h-6 rounded-full mr-5 shadow-xl"
                           style={{ 
                             backgroundColor: item.color,
-                            boxShadow: `0 0 20px ${item.color}40`
+                            boxShadow: `0 0 25px ${item.color}50`
                           }}
-                        ></div>
-                        <span className="text-3xl mr-4 drop-shadow-lg">{item.icon}</span>
+                          animate={{
+                            scale: [1, 1.1, 1],
+                            boxShadow: [
+                              `0 0 25px ${item.color}50`,
+                              `0 0 35px ${item.color}70`,
+                              `0 0 25px ${item.color}50`
+                            ]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: index * 0.2
+                          }}
+                        />
+                        <span className="text-4xl mr-5 drop-shadow-lg">{item.icon}</span>
                         <div className="flex-1 relative z-10">
-                          <div className="font-bold text-gray-900 text-lg mb-1">{item.name}</div>
-                          <div className="text-xl text-gray-900 font-black bg-white/30 px-3 py-2 rounded-xl backdrop-blur-sm border border-white/40 shadow-lg">
+                          <div className="font-black text-gray-900 text-xl mb-2">{item.name}</div>
+                          <div className="text-2xl text-gray-900 font-black bg-white/40 px-4 py-3 rounded-2xl backdrop-blur-sm border border-white/50 shadow-xl">
                             {item.value} kg/month
                           </div>
                         </div>
