@@ -1,0 +1,33 @@
+service: carbon-print-backend
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-east-1
+  stage: dev
+  memorySize: 1024
+  timeout: 30
+  environment:
+    NODE_ENV: production
+
+functions:
+  api:
+    handler: lambda_handler.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+      - http:
+          path: /
+          method: ANY
+          cors: true
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    slim: true
+    strip: false
