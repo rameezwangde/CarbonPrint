@@ -8,10 +8,24 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   server: {
+    port: 8080,
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'http://localhost:9000',
         changeOrigin: true,
+      },
+    },
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          charts: ['recharts'],
+          maps: ['leaflet', 'react-leaflet'],
+        },
       },
     },
   },

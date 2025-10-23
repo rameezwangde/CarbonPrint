@@ -1,0 +1,394 @@
+// Power BI DAX Measures for Carbon Footprint Dashboard
+// Copy and paste these measures into Power BI Desktop
+
+// ===========================================
+// CORE METRICS
+// ===========================================
+
+// Total CO2 Emissions
+Total CO2 = 
+SUM(UserMetrics[totalCO2])
+
+// Eco Score
+Eco Score = 
+SUM(UserMetrics[ecoScore])
+
+// Performance Level
+Performance Level = 
+IF(
+    [Total CO2] > 300, "Needs Improvement",
+    IF([Total CO2] > 250, "Average", "Good")
+)
+
+// Next Month Prediction
+Next Month Prediction = 
+SUM(UserMetrics[nextMonthPrediction])
+
+// Expected Change
+Expected Change = 
+[Next Month Prediction] - [Total CO2]
+
+// Percentage Change
+Percentage Change = 
+DIVIDE([Expected Change], [Total CO2], 0)
+
+// ===========================================
+// CO2 BREAKDOWN METRICS
+// ===========================================
+
+// Total CO2 by Category
+Total CO2 by Category = 
+SUM(CO2Breakdown[Value])
+
+// Average CO2 by Category
+Avg CO2 by Category = 
+AVERAGEX(
+    CO2Breakdown,
+    CO2Breakdown[Value]
+)
+
+// Top CO2 Category
+Top CO2 Category = 
+TOPN(1, CO2Breakdown, CO2Breakdown[Value], DESC)
+
+// CO2 Category Percentage
+CO2 Category Percentage = 
+DIVIDE(
+    CO2Breakdown[Value],
+    [Total CO2],
+    0
+)
+
+// Transportation Impact
+Transportation Impact = 
+CALCULATE(
+    SUM(CO2Breakdown[Value]),
+    CO2Breakdown[Category] = "Transportation"
+)
+
+// Electricity Impact
+Electricity Impact = 
+CALCULATE(
+    SUM(CO2Breakdown[Value]),
+    CO2Breakdown[Category] = "Electricity"
+)
+
+// Air Travel Impact
+Air Travel Impact = 
+CALCULATE(
+    SUM(CO2Breakdown[Value]),
+    CO2Breakdown[Category] = "Air Travel"
+)
+
+// ===========================================
+// FORECAST METRICS
+// ===========================================
+
+// Current Month CO2
+Current Month CO2 = 
+CALCULATE(
+    SUM(ForecastData[Current]),
+    ForecastData[Current] <> BLANK()
+)
+
+// Average Predicted CO2
+Avg Predicted CO2 = 
+AVERAGEX(ForecastData, ForecastData[Predicted])
+
+// Forecast Trend
+Forecast Trend = 
+VAR CurrentValue = [Current Month CO2]
+VAR AvgPredicted = [Avg Predicted CO2]
+RETURN
+    IF(
+        AvgPredicted > CurrentValue, "Increasing",
+        IF(AvgPredicted < CurrentValue, "Decreasing", "Stable")
+    )
+
+// Peak Month
+Peak Month = 
+TOPN(1, ForecastData, ForecastData[Predicted], DESC)
+
+// Lowest Month
+Lowest Month = 
+TOPN(1, ForecastData, ForecastData[Predicted], ASC)
+
+// Seasonal Variation
+Seasonal Variation = 
+VAR MaxValue = MAX(ForecastData[Predicted])
+VAR MinValue = MIN(ForecastData[Predicted])
+RETURN
+    MaxValue - MinValue
+
+// ===========================================
+// SEASONAL METRICS
+// ===========================================
+
+// Winter Average
+Winter Average = 
+CALCULATE(
+    AVERAGE(SeasonalData[CO2Value]),
+    SeasonalData[Season] = "Winter"
+)
+
+// Summer Average
+Summer Average = 
+CALCULATE(
+    AVERAGE(SeasonalData[CO2Value]),
+    SeasonalData[Season] = "Summer"
+)
+
+// Monsoon Average
+Monsoon Average = 
+CALCULATE(
+    AVERAGE(SeasonalData[CO2Value]),
+    SeasonalData[Season] = "Monsoon"
+)
+
+// Seasonal Difference
+Seasonal Difference = 
+[Winter Average] - [Summer Average]
+
+// ===========================================
+// PEER COMPARISON METRICS
+// ===========================================
+
+// User Performance vs Average
+User vs Average = 
+DIVIDE(
+    SUM(PeerComparison[UserValue]),
+    SUM(PeerComparison[AverageValue]),
+    0
+)
+
+// Performance Percentile
+Performance Percentile = 
+AVERAGE(PeerComparison[Percentile])
+
+// Best Performing Category
+Best Performing Category = 
+TOPN(1, 
+    PeerComparison, 
+    DIVIDE(PeerComparison[UserValue], PeerComparison[AverageValue], 0), 
+    ASC
+)
+
+// Worst Performing Category
+Worst Performing Category = 
+TOPN(1, 
+    PeerComparison, 
+    DIVIDE(PeerComparison[UserValue], PeerComparison[AverageValue], 0), 
+    DESC
+)
+
+// ===========================================
+// AREA ANALYSIS METRICS
+// ===========================================
+
+// Total Area CO2
+Total Area CO2 = 
+SUM(AreaAnalysis[Total])
+
+// Residential Impact
+Residential Impact = 
+SUM(AreaAnalysis[Residential])
+
+// Corporate Impact
+Corporate Impact = 
+SUM(AreaAnalysis[Corporate])
+
+// Industrial Impact
+Industrial Impact = 
+SUM(AreaAnalysis[Industrial])
+
+// Vehicular Impact
+Vehicular Impact = 
+SUM(AreaAnalysis[Vehicular])
+
+// Airport Impact
+Airport Impact = 
+SUM(AreaAnalysis[Airport])
+
+// Construction Impact
+Construction Impact = 
+SUM(AreaAnalysis[Construction])
+
+// ===========================================
+// INSIGHTS METRICS
+// ===========================================
+
+// High Priority Insights
+High Priority Insights = 
+COUNTROWS(
+    FILTER(Insights, Insights[Priority] = 1)
+)
+
+// Warning Insights
+Warning Insights = 
+COUNTROWS(
+    FILTER(Insights, Insights[Type] = "warning")
+)
+
+// Success Insights
+Success Insights = 
+COUNTROWS(
+    FILTER(Insights, Insights[Type] = "success")
+)
+
+// Info Insights
+Info Insights = 
+COUNTROWS(
+    FILTER(Insights, Insights[Type] = "info")
+)
+
+// ===========================================
+// TREND ANALYSIS
+// ===========================================
+
+// Month over Month Change
+MoM Change = 
+VAR CurrentMonth = [Current Month CO2]
+VAR PreviousMonth = 
+    CALCULATE(
+        SUM(ForecastData[Current]),
+        DATEADD(ForecastData[Month], -1, MONTH)
+    )
+RETURN
+    CurrentMonth - PreviousMonth
+
+// Month over Month Percentage
+MoM Percentage = 
+DIVIDE([MoM Change], [Current Month CO2], 0)
+
+// Year over Year Change
+YoY Change = 
+VAR CurrentYear = [Current Month CO2]
+VAR PreviousYear = 
+    CALCULATE(
+        SUM(ForecastData[Current]),
+        DATEADD(ForecastData[Month], -12, MONTH)
+    )
+RETURN
+    CurrentYear - PreviousYear
+
+// Year over Year Percentage
+YoY Percentage = 
+DIVIDE([YoY Change], [Current Month CO2], 0)
+
+// ===========================================
+// RANKING METRICS
+// ===========================================
+
+// CO2 Category Rank
+CO2 Category Rank = 
+RANKX(
+    ALL(CO2Breakdown[Category]),
+    [Total CO2 by Category],
+    ,
+    DESC
+)
+
+// Performance Rank
+Performance Rank = 
+RANKX(
+    ALL(PeerComparison[Category]),
+    [User vs Average],
+    ,
+    ASC
+)
+
+// ===========================================
+// CONDITIONAL FORMATTING
+// ===========================================
+
+// Performance Color
+Performance Color = 
+SWITCH(
+    [Performance Level],
+    "Good", "#10B981",
+    "Average", "#F59E0B",
+    "Needs Improvement", "#EF4444",
+    "#6B7280"
+)
+
+// Trend Color
+Trend Color = 
+SWITCH(
+    [Forecast Trend],
+    "Increasing", "#EF4444",
+    "Decreasing", "#10B981",
+    "Stable", "#6B7280",
+    "#6B7280"
+)
+
+// ===========================================
+// TIME INTELLIGENCE
+// ===========================================
+
+// Current Date
+Current Date = 
+TODAY()
+
+// Report Date
+Report Date = 
+MAX(UserMetrics[reportDate])
+
+// Days Since Report
+Days Since Report = 
+DATEDIFF([Report Date], [Current Date], DAY)
+
+// ===========================================
+// UTILITY MEASURES
+// ===========================================
+
+// Has Data
+Has Data = 
+IF(
+    [Total CO2] > 0, "Yes", "No"
+)
+
+// Data Quality Score
+Data Quality Score = 
+VAR TotalFields = 7
+VAR FilledFields = 
+    IF([Total CO2] > 0, 1, 0) +
+    IF([Eco Score] > 0, 1, 0) +
+    IF([Next Month Prediction] > 0, 1, 0) +
+    IF([Transportation Impact] > 0, 1, 0) +
+    IF([Electricity Impact] > 0, 1, 0) +
+    IF([Air Travel Impact] > 0, 1, 0) +
+    IF([Performance Percentile] > 0, 1, 0)
+RETURN
+    DIVIDE(FilledFields, TotalFields, 0)
+
+// ===========================================
+// KPI MEASURES
+// ===========================================
+
+// CO2 Target (250 kg)
+CO2 Target = 250
+
+// Target Achievement
+Target Achievement = 
+DIVIDE([Total CO2], [CO2 Target], 0)
+
+// Target Status
+Target Status = 
+IF(
+    [Target Achievement] <= 1, "Achieved",
+    IF([Target Achievement] <= 1.2, "Close", "Exceeded")
+)
+
+// Eco Score Target (80)
+Eco Score Target = 80
+
+// Eco Score Achievement
+Eco Score Achievement = 
+DIVIDE([Eco Score], [Eco Score Target], 0)
+
+// Eco Score Status
+Eco Score Status = 
+IF(
+    [Eco Score Achievement] >= 1, "Achieved",
+    IF([Eco Score Achievement] >= 0.8, "Close", "Needs Improvement")
+)

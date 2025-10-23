@@ -1,0 +1,319 @@
+{
+  "powerBI_template": {
+    "name": "Carbon Footprint Insights Dashboard",
+    "version": "1.0",
+    "description": "Interactive Power BI dashboard for carbon footprint analysis",
+    "pages": [
+      {
+        "name": "Executive Summary",
+        "visuals": [
+          {
+            "type": "Card",
+            "title": "Total CO2 Emissions",
+            "measure": "Total CO2",
+            "format": "Number with 1 decimal",
+            "position": {"x": 0, "y": 0, "width": 200, "height": 100}
+          },
+          {
+            "type": "Gauge",
+            "title": "Eco Score",
+            "measure": "Eco Score",
+            "min": 0,
+            "max": 100,
+            "target": 80,
+            "position": {"x": 220, "y": 0, "width": 200, "height": 100}
+          },
+          {
+            "type": "Card",
+            "title": "Performance Level",
+            "measure": "Performance Level",
+            "conditional_formatting": true,
+            "position": {"x": 440, "y": 0, "width": 200, "height": 100}
+          },
+          {
+            "type": "Card",
+            "title": "Next Month Prediction",
+            "measure": "Next Month Prediction",
+            "show_change": true,
+            "position": {"x": 0, "y": 120, "width": 640, "height": 100}
+          }
+        ]
+      },
+      {
+        "name": "CO2 Breakdown",
+        "visuals": [
+          {
+            "type": "PieChart",
+            "title": "CO2 Emissions by Category",
+            "legend": "CO2Breakdown[Category]",
+            "values": "CO2Breakdown[Value]",
+            "colors": "CO2Breakdown[Color]",
+            "position": {"x": 0, "y": 0, "width": 300, "height": 300}
+          },
+          {
+            "type": "BarChart",
+            "title": "Category Comparison",
+            "x_axis": "CO2Breakdown[Category]",
+            "y_axis": "CO2Breakdown[Value]",
+            "color": "CO2Breakdown[Color]",
+            "position": {"x": 320, "y": 0, "width": 320, "height": 300}
+          },
+          {
+            "type": "DonutChart",
+            "title": "Percentage Breakdown",
+            "legend": "CO2Breakdown[Category]",
+            "values": "CO2Breakdown[Value]",
+            "inner_radius": 50,
+            "position": {"x": 0, "y": 320, "width": 300, "height": 200}
+          }
+        ]
+      },
+      {
+        "name": "Forecast Analysis",
+        "visuals": [
+          {
+            "type": "LineChart",
+            "title": "12-Month CO2 Forecast",
+            "x_axis": "ForecastData[Month]",
+            "y_axis": ["ForecastData[Current]", "ForecastData[Predicted]"],
+            "legend": ["Current", "Predicted"],
+            "markers": true,
+            "position": {"x": 0, "y": 0, "width": 640, "height": 300}
+          },
+          {
+            "type": "AreaChart",
+            "title": "Seasonal Trends",
+            "x_axis": "ForecastData[Month]",
+            "y_axis": "ForecastData[Predicted]",
+            "color": "ForecastData[Season]",
+            "position": {"x": 0, "y": 320, "width": 320, "height": 200}
+          },
+          {
+            "type": "Table",
+            "title": "Seasonal Information",
+            "columns": ["Month", "Season", "Temperature", "Activities", "Icon"],
+            "conditional_formatting": "Season",
+            "position": {"x": 340, "y": 320, "width": 300, "height": 200}
+          }
+        ]
+      },
+      {
+        "name": "Comparative Analysis",
+        "visuals": [
+          {
+            "type": "ClusteredBarChart",
+            "title": "Peer Comparison",
+            "x_axis": "PeerComparison[Category]",
+            "y_axis": ["PeerComparison[UserValue]", "PeerComparison[AverageValue]"],
+            "legend": ["Your Value", "Average"],
+            "position": {"x": 0, "y": 0, "width": 400, "height": 300}
+          },
+          {
+            "type": "Gauge",
+            "title": "Performance Percentile",
+            "measure": "PeerComparison[Percentile]",
+            "min": 0,
+            "max": 100,
+            "target": 50,
+            "position": {"x": 420, "y": 0, "width": 220, "height": 300}
+          },
+          {
+            "type": "Table",
+            "title": "Key Insights",
+            "columns": ["Type", "Title", "Message", "Priority", "Category"],
+            "conditional_formatting": "Type",
+            "position": {"x": 0, "y": 320, "width": 640, "height": 200}
+          }
+        ]
+      },
+      {
+        "name": "Geographic Analysis",
+        "visuals": [
+          {
+            "type": "Map",
+            "title": "Location Analysis",
+            "location": "AreaAnalysis[City]",
+            "size": "AreaAnalysis[Total]",
+            "color": "AreaAnalysis[Total]",
+            "position": {"x": 0, "y": 0, "width": 320, "height": 300}
+          },
+          {
+            "type": "StackedBarChart",
+            "title": "Area Breakdown",
+            "x_axis": "AreaAnalysis[Area]",
+            "y_axis": ["Residential", "Corporate", "Industrial", "Vehicular", "Construction", "Airport"],
+            "position": {"x": 340, "y": 0, "width": 300, "height": 300}
+          },
+          {
+            "type": "Table",
+            "title": "Area Summary",
+            "columns": ["Area", "City", "Total", "Residential", "Corporate", "Industrial"],
+            "position": {"x": 0, "y": 320, "width": 640, "height": 200}
+          }
+        ]
+      }
+    ],
+    "slicers": [
+      {
+        "name": "Date Range",
+        "field": "ForecastData[Month]",
+        "type": "Between",
+        "style": "Dropdown",
+        "pages": ["Forecast Analysis", "Comparative Analysis"]
+      },
+      {
+        "name": "Category Filter",
+        "field": "CO2Breakdown[Category]",
+        "type": "List",
+        "multi_select": true,
+        "pages": ["CO2 Breakdown", "Comparative Analysis"]
+      },
+      {
+        "name": "Season Filter",
+        "field": "SeasonalData[Season]",
+        "type": "List",
+        "style": "Buttons",
+        "pages": ["Forecast Analysis", "Geographic Analysis"]
+      },
+      {
+        "name": "Performance Filter",
+        "field": "Performance Level",
+        "type": "List",
+        "style": "Dropdown",
+        "pages": ["Executive Summary", "Comparative Analysis"]
+      }
+    ],
+    "measures": [
+      {
+        "name": "Total CO2",
+        "dax": "SUM(UserMetrics[totalCO2])",
+        "description": "Total CO2 emissions in kg"
+      },
+      {
+        "name": "Eco Score",
+        "dax": "SUM(UserMetrics[ecoScore])",
+        "description": "Environmental impact score"
+      },
+      {
+        "name": "Performance Level",
+        "dax": "IF([Total CO2] > 300, \"Needs Improvement\", IF([Total CO2] > 250, \"Average\", \"Good\"))",
+        "description": "Performance classification"
+      },
+      {
+        "name": "Next Month Prediction",
+        "dax": "SUM(UserMetrics[nextMonthPrediction])",
+        "description": "Predicted CO2 for next month"
+      },
+      {
+        "name": "Expected Change",
+        "dax": "[Next Month Prediction] - [Total CO2]",
+        "description": "Expected change in CO2"
+      },
+      {
+        "name": "Percentage Change",
+        "dax": "DIVIDE([Expected Change], [Total CO2], 0)",
+        "description": "Percentage change in CO2"
+      },
+      {
+        "name": "Top Category",
+        "dax": "TOPN(1, CO2Breakdown, CO2Breakdown[Value], DESC)",
+        "description": "Highest CO2 category"
+      },
+      {
+        "name": "Seasonal Average",
+        "dax": "AVERAGEX(SeasonalData, SeasonalData[CO2Value])",
+        "description": "Average CO2 by season"
+      }
+    ],
+    "relationships": [
+      {
+        "from_table": "UserMetrics",
+        "from_column": "userId",
+        "to_table": "CO2Breakdown",
+        "to_column": "userId",
+        "cardinality": "One-to-Many"
+      },
+      {
+        "from_table": "UserMetrics",
+        "from_column": "userId",
+        "to_table": "ForecastData",
+        "to_column": "userId",
+        "cardinality": "One-to-Many"
+      },
+      {
+        "from_table": "UserMetrics",
+        "from_column": "userId",
+        "to_table": "SeasonalData",
+        "to_column": "userId",
+        "cardinality": "One-to-Many"
+      },
+      {
+        "from_table": "UserMetrics",
+        "from_column": "userId",
+        "to_table": "PeerComparison",
+        "to_column": "userId",
+        "cardinality": "One-to-Many"
+      },
+      {
+        "from_table": "UserMetrics",
+        "from_column": "userId",
+        "to_table": "AreaAnalysis",
+        "to_column": "userId",
+        "cardinality": "One-to-Many"
+      }
+    ],
+    "bookmarks": [
+      {
+        "name": "Current Month",
+        "description": "Show current month data only",
+        "filters": ["ForecastData[Month] = Current Month"]
+      },
+      {
+        "name": "Full Year",
+        "description": "Show all 12 months",
+        "filters": ["All months visible"]
+      },
+      {
+        "name": "High Impact",
+        "description": "Filter to high CO2 categories",
+        "filters": ["CO2Breakdown[Value] > 50"]
+      },
+      {
+        "name": "Seasonal View",
+        "description": "Group by seasons",
+        "filters": ["Group by SeasonalData[Season]"]
+      },
+      {
+        "name": "Reset",
+        "description": "Clear all filters",
+        "filters": ["No filters applied"]
+      }
+    ],
+    "theme": {
+      "name": "Carbon Footprint",
+      "primary_color": "#10B981",
+      "secondary_color": "#3B82F6",
+      "accent_color": "#F59E0B",
+      "background_color": "#F9FAFB",
+      "text_color": "#374151",
+      "font_family": "Segoe UI"
+    },
+    "mobile_layout": {
+      "phone": {
+        "layout": "vertical_stack",
+        "max_visuals_per_page": 4,
+        "simplified_navigation": true
+      },
+      "tablet": {
+        "layout": "2_column_grid",
+        "max_visuals_per_page": 6,
+        "touch_optimized": true
+      },
+      "desktop": {
+        "layout": "full_grid",
+        "max_visuals_per_page": 8,
+        "advanced_interactions": true
+      }
+    }
+  }
+}
