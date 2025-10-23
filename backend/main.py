@@ -28,7 +28,13 @@ app = FastAPI(title="CO2 Prediction API", version="1.0.0")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "http://localhost:3000", "http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:8080", 
+        "http://localhost:3000", 
+        "http://localhost:5173",
+        "https://carbon-print.vercel.app",  # Your Vercel frontend URL
+        "https://*.vercel.app"  # Allow all Vercel preview deployments
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
