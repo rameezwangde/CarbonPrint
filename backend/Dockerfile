@@ -14,8 +14,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
+# Create a startup script that properly handles the PORT variable
+RUN echo '#!/bin/bash' > start.sh && \
+    echo 'echo "Starting FastAPI app..."' >> start.sh && \
+    echo 'echo "PORT: $PORT"' >> start.sh && \
+    echo 'if [ -z "$PORT" ]; then PORT=8000; fi' >> start.sh && \
+    echo 'echo "Using port: $PORT"' >> start.sh && \
+    echo 'python -m uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1' >> start.sh && \
+    chmod +x start.sh
+
 # Expose port
 EXPOSE 8000
 
-# Start command - use Railway's PORT environment variable
-CMD ["sh", "-c", "python -m uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1"]
+# Start command
+CMD ["./start.sh"]
