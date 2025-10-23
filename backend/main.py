@@ -67,9 +67,13 @@ def get_indian_season(month: int) -> str:
 @app.on_event("startup")
 async def startup_event():
     """Initialize database and load models on startup"""
-    init_db()
-    await ml_service.initialize_models()
-    logger.info("Backend services initialized successfully")
+    try:
+        init_db()
+        await ml_service.initialize_models()
+        logger.info("Backend services initialized successfully")
+    except Exception as e:
+        logger.error(f"Startup error: {str(e)}")
+        logger.info("Continuing with limited functionality")
 
 @app.get("/")
 async def root():
