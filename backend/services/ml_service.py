@@ -15,10 +15,16 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import xgboost as xgb
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
-from tensorflow.keras.optimizers import Adam
+# Try to import TensorFlow, but make it optional
+try:
+    import tensorflow as tf
+    from tensorflow.keras.models import Sequential
+    from tensorflow.keras.layers import Dense, Dropout
+    from tensorflow.keras.optimizers import Adam
+    TENSORFLOW_AVAILABLE = True
+except ImportError:
+    TENSORFLOW_AVAILABLE = False
+    print("Warning: TensorFlow not available. Some ML features will be limited.")
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -193,6 +199,10 @@ class MLService:
 
     async def _train_neural_network(self, df: pd.DataFrame):
         """Train Neural Network model"""
+        if not TENSORFLOW_AVAILABLE:
+            logger.warning("TensorFlow not available, skipping neural network training")
+            return None, 0.0, 0.0
+        
         try:
             X, y = self._prepare_features(df)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
