@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   BarChart3, 
@@ -34,6 +34,29 @@ type DashboardSection = 'insights' | 'pie-chart' | 'seasonal' | 'forecast' | 're
 
 const Dashboard: React.FC = () => {
   const { userPrediction, refreshUserPrediction } = useDataContext();
+  
+  // Add CSS animations for text effects
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      @keyframes textShimmer {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<DashboardSection>('insights');
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -3407,7 +3430,14 @@ const Dashboard: React.FC = () => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.2 }}
-                      className="text-3xl font-black text-white drop-shadow-2xl"
+                      className="text-3xl font-black drop-shadow-2xl"
+                      style={{
+                        background: 'linear-gradient(45deg, #10b981, #3b82f6, #8b5cf6, #f59e0b)',
+                        backgroundSize: '300% 300%',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        animation: 'gradientShift 3s ease-in-out infinite'
+                      }}
               >
                 Carbon Dashboard
               </motion.h1>
@@ -3489,15 +3519,28 @@ const Dashboard: React.FC = () => {
                     }`} />
                         </motion.div>
                         
-                        {/* Label with Better Spacing */}
+                        {/* Label with Animated Reactive Text */}
                         <div className="flex-1 ml-4 text-left min-w-0">
-                          <span className={`font-bold text-lg transition-colors duration-300 whitespace-nowrap ${
-                            activeSection === item.id 
-                              ? 'text-white' 
-                              : 'text-gray-800 group-hover:text-gray-900'
-                          }`}>
+                          <motion.span 
+                            className={`font-bold text-lg transition-all duration-500 whitespace-nowrap ${
+                              activeSection === item.id 
+                                ? 'text-white drop-shadow-lg' 
+                                : 'text-gray-800 group-hover:text-gray-900'
+                            }`}
+                            style={activeSection === item.id ? {
+                              background: 'linear-gradient(45deg, #ffffff, #f0f9ff, #ffffff)',
+                              backgroundSize: '200% 200%',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              animation: 'textShimmer 2s ease-in-out infinite'
+                            } : {}}
+                            whileHover={{ 
+                              scale: 1.05,
+                              transition: { duration: 0.2 }
+                            }}
+                          >
                             {item.label}
-                          </span>
+                          </motion.span>
                   </div>
                         
                         {/* Enhanced Active Indicator */}
@@ -3536,7 +3579,18 @@ const Dashboard: React.FC = () => {
                 {/* Separator with Glass Effect */}
                 <div className="relative mb-8 flex justify-center">
                   <div className="relative bg-gradient-to-br from-white/15 to-transparent backdrop-blur-md px-4 py-2 rounded-full border border-white/30 shadow-lg">
-                    <span className="text-sm font-bold text-gray-700">Quick Actions</span>
+                    <motion.span 
+                      className="text-sm font-bold"
+                      style={{
+                        background: 'linear-gradient(45deg, #374151, #6b7280, #374151)',
+                        backgroundSize: '200% 200%',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        animation: 'textShimmer 3s ease-in-out infinite'
+                      }}
+                    >
+                      Quick Actions
+                    </motion.span>
                   </div>
                 </div>
 
@@ -3559,7 +3613,22 @@ const Dashboard: React.FC = () => {
                         <ArrowLeft className="w-6 h-6 text-gray-700" />
                       </motion.div>
                       <div className="flex-1 ml-4 text-left">
-                        <span className="font-bold text-lg text-gray-800">Back to Survey</span>
+                        <motion.span 
+                          className="font-bold text-lg"
+                          style={{
+                            background: 'linear-gradient(45deg, #1f2937, #374151, #1f2937)',
+                            backgroundSize: '200% 200%',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            animation: 'textShimmer 2.5s ease-in-out infinite'
+                          }}
+                          whileHover={{ 
+                            scale: 1.05,
+                            transition: { duration: 0.2 }
+                          }}
+                        >
+                          Back to Survey
+                        </motion.span>
                   </div>
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -3585,7 +3654,22 @@ const Dashboard: React.FC = () => {
                         <RefreshCw className="w-6 h-6 text-gray-700" />
                       </motion.div>
                       <div className="flex-1 ml-4 text-left">
-                        <span className="font-bold text-lg text-gray-800">Refresh Data</span>
+                        <motion.span 
+                          className="font-bold text-lg"
+                          style={{
+                            background: 'linear-gradient(45deg, #1f2937, #374151, #1f2937)',
+                            backgroundSize: '200% 200%',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            animation: 'textShimmer 2.5s ease-in-out infinite'
+                          }}
+                          whileHover={{ 
+                            scale: 1.05,
+                            transition: { duration: 0.2 }
+                          }}
+                        >
+                          Refresh Data
+                        </motion.span>
                   </div>
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
