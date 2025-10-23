@@ -1,11 +1,30 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 // import { useDataContext } from '../contexts/DataContext'; // Removed unused import
 import { apiService } from '../services/apiService';
 import 'leaflet/dist/leaflet.css';
+
+// Add custom CSS for heatmap circles
+const heatmapStyles = `
+  .heatmap-circle {
+    transition: all 0.3s ease;
+    filter: blur(1px);
+  }
+  
+  .heatmap-center {
+    transition: all 0.3s ease;
+  }
+`;
+
+// Inject styles
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = heatmapStyles;
+  document.head.appendChild(styleSheet);
+}
 
 // Fix for default markers in react-leaflet
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,6 +111,7 @@ const Maps: React.FC<MapsProps> = () => {
     sector: 'All',
     city: 'All'
   });
+  const [showHeatmap, setShowHeatmap] = useState(false);
 
   const [scenarios, setScenarios] = useState({
     electricVehicles: false,
@@ -344,6 +364,83 @@ const Maps: React.FC<MapsProps> = () => {
     loadAreaData();
   }, [loadAreaData]);
 
+  // Heatmap Layer Component
+  const HeatmapLayer = ({ areas }: { areas: AreaData[] }) => {
+    const map = useMap();
+    
+    useEffect(() => {
+      if (!showHeatmap) return;
+      
+      // Create heatmap data points
+      const heatmapData = areas.map(area => {
+        const coords = AREA_COORDINATES[area.name as keyof typeof AREA_COORDINATES];
+        if (!coords) return null;
+        
+        return {
+          lat: coords[0],
+          lng: coords[1],
+          intensity: Math.min(area.co2 / 300, 1) // Normalize to 0-1 range
+        };
+      }).filter(Boolean);
+      
+      // Create heatmap layer using Leaflet's built-in capabilities
+      const heatmapLayer = L.layerGroup();
+      
+      heatmapData.forEach(point => {
+        if (!point) return;
+        
+        // Create multiple smaller circles for smoother effect
+        const baseRadius = Math.max(8, Math.min(25, point.intensity * 20)); // Smaller base radius
+        const opacity = Math.max(0.2, Math.min(0.6, point.intensity * 0.8)); // Lower opacity
+        
+        // Create multiple concentric circles for smoother gradient effect
+        for (let i = 0; i < 3; i++) {
+          const radius = baseRadius * (1 + i * 0.5);
+          const circleOpacity = opacity * (1 - i * 0.3);
+          
+          const circle = L.circle([point.lat, point.lng], {
+            radius: radius * 100, // Convert to meters
+            color: 'transparent',
+            fillColor: getHeatmapColor(point.intensity),
+            fillOpacity: circleOpacity,
+            weight: 0,
+            className: 'heatmap-circle'
+          });
+          
+          heatmapLayer.addLayer(circle);
+        }
+        
+        // Add a subtle center point
+        const centerPoint = L.circleMarker([point.lat, point.lng], {
+          radius: 3,
+          color: getHeatmapColor(point.intensity),
+          fillColor: getHeatmapColor(point.intensity),
+          fillOpacity: 0.8,
+          weight: 1,
+          className: 'heatmap-center'
+        });
+        
+        heatmapLayer.addLayer(centerPoint);
+      });
+      
+      map.addLayer(heatmapLayer);
+      
+      return () => {
+        map.removeLayer(heatmapLayer);
+      };
+    }, [map, areas, showHeatmap]);
+    
+    return null;
+  };
+
+  // Get heatmap color based on intensity
+  const getHeatmapColor = (intensity: number) => {
+    if (intensity < 0.25) return '#4ade80'; // Soft green
+    if (intensity < 0.5) return '#fbbf24'; // Soft yellow
+    if (intensity < 0.75) return '#f97316'; // Soft orange
+    return '#ef4444'; // Soft red
+  };
+
   // Custom marker component
   const CustomMarker = ({ area }: { area: AreaData }) => {
     // const map = useMap(); // Removed unused variable
@@ -528,7 +625,11 @@ const Maps: React.FC<MapsProps> = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            {filteredAreas.map((area) => (
+            {/* Heatmap Layer */}
+            <HeatmapLayer areas={filteredAreas} />
+            
+            {/* Markers - only show when heatmap is off */}
+            {!showHeatmap && filteredAreas.map((area) => (
               <CustomMarker key={area.name} area={area} />
             ))}
           </MapContainer>
@@ -577,6 +678,24 @@ const Maps: React.FC<MapsProps> = () => {
                   <option value="Navi Mumbai">Navi Mumbai</option>
                 </select>
                 
+                {/* Heatmap Toggle */}
+                <div className="pt-2 border-t border-gray-200">
+                  <label className="flex items-center space-x-2 p-2 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg cursor-pointer hover:from-red-100 hover:to-orange-100 transition-all duration-200">
+                    <input
+                      type="checkbox"
+                      checked={showHeatmap}
+                      onChange={(e) => setShowHeatmap(e.target.checked)}
+                      className="rounded text-red-600 focus:ring-red-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      🔥 Heatmap View
+                    </span>
+                  </label>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {showHeatmap ? 'Showing heat zones' : 'Toggle to see CO₂ intensity'}
+                  </p>
+                </div>
+                
                 <div className="flex space-x-2">
                   <button
                     onClick={resetFilters}
@@ -602,21 +721,52 @@ const Maps: React.FC<MapsProps> = () => {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-lg"
             >
-              <h3 className="font-semibold text-gray-800 mb-2">CO2 Levels</h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-                  <span>Low: &lt;240 kg/month</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-orange-500 rounded-full"></div>
-                  <span>Medium: 240-260 kg/month</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                  <span>High: &gt;260 kg/month</span>
-                </div>
-              </div>
+              {showHeatmap ? (
+                <>
+                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+                    🔥 Heatmap Intensity
+                  </h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                      <span>Low: &lt;90 kg/month</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                      <span>Medium: 90-180 kg/month</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-orange-500 rounded-full"></div>
+                      <span>High: 180-240 kg/month</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                      <span>Critical: &gt;240 kg/month</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Larger circles = higher emissions
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-semibold text-gray-800 mb-2">CO2 Levels</h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                      <span>Low: &lt;240 kg/month</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-orange-500 rounded-full"></div>
+                      <span>Medium: 240-260 kg/month</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                      <span>High: &gt;260 kg/month</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </motion.div>
           </div>
         </div>

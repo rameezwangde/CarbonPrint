@@ -14,7 +14,7 @@ const App: React.FC = () => {
     <DataProvider>
       <Router>
         <div className="flex flex-col min-h-screen">
-          <Navbar />
+          {/* <Navbar /> */}
           <AnimatePresence mode="wait">
             <motion.main
               initial={{ opacity: 0, y: 20 }}
