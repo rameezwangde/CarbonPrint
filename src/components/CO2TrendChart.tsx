@@ -85,39 +85,105 @@ const CO2TrendChart: React.FC<CO2TrendChartProps> = ({ data }) => {
 
   const chartData = generateChartData();
 
+  // Find the maximum predicted CO₂ value and its details
+  const maxPrediction = chartData.reduce((max, current) => {
+    if (current.predicted && current.predicted > max.predicted) {
+      return current;
+    }
+    return max;
+  }, chartData[0] || { predicted: 0 });
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+      const isMaxPrediction = data.predicted === maxPrediction.predicted && data.predicted > 0;
+      
       return (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white/95 backdrop-blur-sm p-6 rounded-2xl shadow-2xl border border-white/30"
+          className={`backdrop-blur-sm p-6 rounded-2xl shadow-2xl border-2 relative overflow-hidden ${
+            isMaxPrediction 
+              ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-red-400' 
+              : 'bg-white/95 border-white/30'
+          }`}
         >
-          <div className="flex items-center space-x-3 mb-4">
-            <span className="text-3xl">{data.icon}</span>
-            <div>
-              <h4 className="font-bold text-xl text-gray-900">{label}</h4>
-              <p className="text-sm text-gray-600">{data.season} • {data.temp} • {data.activities}</p>
+          {/* Animated background for max prediction */}
+          {isMaxPrediction && (
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-red-400 to-red-500 opacity-50"
+              animate={{
+                x: ['-100%', '100%'],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            />
+          )}
+          
+          <div className="relative z-10">
+            <div className="flex items-center space-x-3 mb-4">
+              <span className="text-3xl">{data.icon}</span>
+              <div>
+                <h4 className={`font-bold text-xl ${isMaxPrediction ? 'text-white' : 'text-gray-900'}`}>
+                  {label}
+                  {isMaxPrediction && (
+                    <motion.span
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                      className="ml-2"
+                    >
+                      ⚠️
+                    </motion.span>
+                  )}
+                </h4>
+                <p className={`text-sm ${isMaxPrediction ? 'text-red-100' : 'text-gray-600'}`}>
+                  {data.season} • {data.temp} • {data.activities}
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="space-y-2">
-            {payload.map((entry: any, index: number) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <div 
-                    className="w-4 h-4 rounded-full" 
-                    style={{ backgroundColor: entry.color }}
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    {entry.dataKey === 'current' ? 'Current' : 'Predicted'}:
+            
+            {isMaxPrediction && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-400/30 rounded-lg p-3 mb-4 border border-red-300"
+              >
+                <p className="text-sm font-bold text-white">
+                  🚨 PEAK EMISSION ALERT - Highest predicted CO₂ level!
+                </p>
+              </motion.div>
+            )}
+            
+            <div className="space-y-2">
+              {payload.map((entry: any, index: number) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div 
+                      className="w-4 h-4 rounded-full" 
+                      style={{ backgroundColor: entry.color }}
+                    />
+                    <span className={`text-sm font-medium ${isMaxPrediction ? 'text-red-100' : 'text-gray-700'}`}>
+                      {entry.dataKey === 'current' ? 'Current' : 'Predicted'}:
+                    </span>
+                  </div>
+                  <span className={`text-lg font-bold ${isMaxPrediction ? 'text-white' : 'text-gray-900'}`}>
+                    {entry.value?.toFixed(1)} kg
+                    {isMaxPrediction && entry.dataKey === 'predicted' && (
+                      <motion.span
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                        className="ml-1"
+                      >
+                        🔥
+                      </motion.span>
+                    )}
                   </span>
                 </div>
-                <span className="text-lg font-bold text-gray-900">
-                  {entry.value?.toFixed(1)} kg
-                </span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </motion.div>
       );
@@ -127,15 +193,59 @@ const CO2TrendChart: React.FC<CO2TrendChartProps> = ({ data }) => {
 
   const CustomDot = (props: any) => {
     const { cx, cy, payload } = props;
+    const isMaxPrediction = payload.predicted === maxPrediction.predicted && payload.predicted > 0;
     
     return (
       <g>
+        {/* Special warning effect for max prediction */}
+        {isMaxPrediction && (
+          <>
+            {/* Outer warning ring */}
+            <motion.circle
+              cx={cx}
+              cy={cy}
+              r={20}
+              fill="none"
+              stroke="#EF4444"
+              strokeWidth={3}
+              opacity={0.6}
+              animate={{
+                r: [20, 25, 20],
+                opacity: [0.6, 0.3, 0.6],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            {/* Warning icon */}
+            <motion.text
+              x={cx}
+              y={cy - 35}
+              textAnchor="middle"
+              className="text-2xl"
+              animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 10, -10, 0]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              ⚠️
+            </motion.text>
+          </>
+        )}
+        
         {/* Outer glow effect */}
         <circle
           cx={cx}
           cy={cy}
           r={12}
-          fill={payload.current ? '#10B981' : '#F59E0B'}
+          fill={payload.current ? '#10B981' : (isMaxPrediction ? '#EF4444' : '#F59E0B')}
           opacity={0.2}
           className="animate-pulse"
         />
@@ -144,7 +254,7 @@ const CO2TrendChart: React.FC<CO2TrendChartProps> = ({ data }) => {
           cx={cx}
           cy={cy}
           r={6}
-          fill={payload.current ? '#10B981' : '#F59E0B'}
+          fill={payload.current ? '#10B981' : (isMaxPrediction ? '#EF4444' : '#F59E0B')}
           stroke="white"
           strokeWidth={3}
           className="drop-shadow-lg hover:r-8 transition-all duration-300"
@@ -262,6 +372,7 @@ const CO2TrendChart: React.FC<CO2TrendChartProps> = ({ data }) => {
           })}
         </div>
       </div>
+
     </div>
   );
 };
