@@ -2328,11 +2328,15 @@ const Dashboard: React.FC = () => {
     const totalCalculatedCO2 = breakdownData.reduce((sum, item) => sum + item.value, 0);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 p-6 space-y-8 relative overflow-hidden">
-        {/* Background Glow Effects */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-10 blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-r from-green-400 to-blue-400 rounded-full opacity-10 blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-pink-400 to-orange-400 rounded-full opacity-5 blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+      <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-green-800 to-teal-900 p-6 space-y-8 relative overflow-hidden">
+        {/* Enhanced Dark Green Background Effects */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-r from-green-400/15 to-emerald-400/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-teal-400/10 to-cyan-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+        
+        {/* Additional Atmospheric Effects */}
+        <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-green-300/10 to-emerald-300/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 left-1/4 w-32 h-32 bg-gradient-to-r from-teal-300/15 to-green-300/15 rounded-full blur-xl animate-pulse" style={{ animationDelay: '3s' }}></div>
 
         {/* Summary Cards */}
         <motion.div
@@ -2344,9 +2348,9 @@ const Dashboard: React.FC = () => {
           {/* Total CO2 Card */}
           <motion.div
             whileHover={{ scale: 1.05, y: -8 }}
-            className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden group"
+            className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/60 relative overflow-hidden group"
             style={{
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
             }}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400 to-blue-500 rounded-full -translate-y-16 translate-x-16 opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
@@ -2388,9 +2392,9 @@ const Dashboard: React.FC = () => {
           {/* Top Contributor Card */}
           <motion.div
             whileHover={{ scale: 1.05, y: -8 }}
-            className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden group"
+            className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/60 relative overflow-hidden group"
             style={{
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
             }}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-400 to-red-500 rounded-full -translate-y-16 translate-x-16 opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
@@ -2434,9 +2438,9 @@ const Dashboard: React.FC = () => {
           {/* Categories Count Card */}
           <motion.div
             whileHover={{ scale: 1.05, y: -8 }}
-            className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden group"
+            className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/60 relative overflow-hidden group"
             style={{
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
             }}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full -translate-y-16 translate-x-16 opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
@@ -2476,31 +2480,198 @@ const Dashboard: React.FC = () => {
           </motion.div>
         </motion.div>
 
-        {/* Pie Chart with Enhanced Animation */}
+        {/* Enhanced Pie Chart with Interactive Animations */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           whileHover={{ scale: 1.02, y: -5 }}
-          className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden group"
+          className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/60 relative overflow-hidden group"
           style={{
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
           }}
         >
+          {/* Floating Particles Background */}
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                animate={{
+                  y: [0, -20, 0],
+                  opacity: [0.2, 0.8, 0.2],
+                  scale: [1, 1.5, 1],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
+          </div>
+          
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-3xl group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
+          
+          {/* Enhanced Header */}
+          <div className="relative z-10 mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="flex items-center justify-between"
+            >
+              <div className="flex items-center space-x-4">
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                  className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg"
+                >
+                  <span className="text-white text-xl">📊</span>
+                </motion.div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800">CO₂ Breakdown Analysis</h3>
+                  <p className="text-gray-600">Interactive emission source visualization</p>
+                </div>
+              </div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg"
+              >
+                Live Data
+              </motion.div>
+            </motion.div>
+          </div>
+          
           <div className="relative z-10">
-        <div className="w-full h-96">
-          <CO2BreakdownPieChart />
-        </div>
-      </div>
+            <div className="w-full h-96">
+              <CO2BreakdownPieChart />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Animated Progress Bars for All Categories */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="bg-gradient-to-br from-emerald-100/80 via-teal-100/80 to-green-100/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-emerald-200/60 relative overflow-hidden"
+        >
+          {/* Animated Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-pulse"></div>
+          </div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center">
+                <motion.span
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  className="text-4xl mr-4"
+                >
+                  📈
+                </motion.span>
+                <div>
+                  <h3 className="text-3xl font-bold text-gray-800">Detailed Breakdown</h3>
+                  <p className="text-gray-600">Animated progress visualization for all emission sources</p>
+                </div>
+              </div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-white/50"
+              >
+                <span className="text-sm font-semibold text-gray-700">Interactive Bars</span>
+              </motion.div>
+            </div>
+            
+            {/* Animated Progress Bars */}
+            <div className="space-y-6">
+              {sortedData.map((item, index) => {
+                const percentage = ((item.value / totalCalculatedCO2) * 100);
+                return (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 1 + index * 0.1 }}
+                    whileHover={{ scale: 1.02, x: 10 }}
+                    className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 relative overflow-hidden group"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-4">
+                        <motion.div
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
+                          className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-lg"
+                          style={{ backgroundColor: item.color }}
+                        >
+                          {item.icon}
+                        </motion.div>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-800">{item.name}</h4>
+                          <p className="text-sm text-gray-600">{item.value.toFixed(1)} kg CO₂</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
+                          className="text-2xl font-bold text-gray-800"
+                        >
+                          {percentage.toFixed(1)}%
+                        </motion.span>
+                      </div>
+                    </div>
+                    
+                    {/* Animated Progress Bar */}
+                    <div className="relative">
+                      <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${percentage}%` }}
+                          transition={{ duration: 1.5, delay: 1.5 + index * 0.2, ease: "easeOut" }}
+                          className="h-full rounded-full relative overflow-hidden"
+                          style={{ backgroundColor: item.color }}
+                        >
+                          <motion.div
+                            animate={{ x: ['-100%', '100%'] }}
+                            transition={{ duration: 2, repeat: Infinity, delay: 2 + index * 0.2 }}
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                          />
+                        </motion.div>
+                      </div>
+                      
+                      {/* Animated Dots */}
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity, delay: index * 0.3 }}
+                        className="absolute top-1/2 transform -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-lg border-2"
+                        style={{ 
+                          left: `${Math.min(percentage, 95)}%`,
+                          borderColor: item.color,
+                          backgroundColor: item.color
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
         </motion.div>
 
         {/* Top 3 Contributors with Staggered Animation */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-3xl p-8 shadow-2xl border border-blue-200"
+          transition={{ duration: 0.8, delay: 1.2 }}
+          className="bg-gradient-to-br from-emerald-100/80 via-teal-100/80 to-green-100/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-emerald-200/60"
         >
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">
@@ -2724,6 +2895,135 @@ const Dashboard: React.FC = () => {
                 </motion.div>
               );
             })}
+          </div>
+        </motion.div>
+
+        {/* Interactive Comparison Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.4 }}
+          className="bg-gradient-to-br from-emerald-100/80 via-teal-100/80 to-green-100/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-emerald-200/60 relative overflow-hidden"
+        >
+          {/* Animated Background Elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center">
+                <motion.span
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  className="text-4xl mr-4"
+                >
+                  🔄
+                </motion.span>
+                <div>
+                  <h3 className="text-3xl font-bold text-gray-800">Impact Comparison</h3>
+                  <p className="text-gray-600">See how your choices affect your carbon footprint</p>
+                </div>
+              </div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg"
+              >
+                Live Impact
+              </motion.div>
+            </div>
+            
+            {/* Comparison Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Current Scenario */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 1.6 }}
+                whileHover={{ scale: 1.02, y: -5 }}
+                className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-blue-200 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full -translate-y-12 translate-x-12"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-lg shadow-lg"
+                    >
+                      📊
+                    </motion.div>
+                    <h4 className="text-xl font-bold text-gray-800">Current Impact</h4>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Total CO₂</span>
+                      <span className="text-2xl font-bold text-blue-600">{totalCalculatedCO2.toFixed(1)} kg</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Categories</span>
+                      <span className="text-lg font-semibold text-gray-800">{sortedData.length}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Top Source</span>
+                      <span className="text-lg font-semibold text-gray-800">{sortedData[0]?.name || 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+              
+              {/* Optimized Scenario */}
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 1.8 }}
+                whileHover={{ scale: 1.02, y: -5 }}
+                className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-green-200 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-400/20 to-emerald-400/20 rounded-full -translate-y-12 translate-x-12"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                      className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white text-lg shadow-lg"
+                    >
+                      🌱
+                    </motion.div>
+                    <h4 className="text-xl font-bold text-gray-800">Optimized Impact</h4>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Reduced CO₂</span>
+                      <span className="text-2xl font-bold text-green-600">{(totalCalculatedCO2 * 0.7).toFixed(1)} kg</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Savings</span>
+                      <span className="text-lg font-semibold text-green-600">-30%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Potential</span>
+                      <span className="text-lg font-semibold text-gray-800">High Impact</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Action Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 2.0 }}
+              className="mt-8 text-center"
+            >
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                Get Optimization Tips
+              </motion.button>
+            </motion.div>
           </div>
         </motion.div>
       </div>
