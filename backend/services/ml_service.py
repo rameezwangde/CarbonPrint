@@ -36,18 +36,36 @@ class MLService:
     async def initialize_models(self):
         """Initialize and train all ML models"""
         try:
+            logger.info("Starting ML model initialization...")
+            
             # Load and prepare data
             df = await self._load_and_prepare_data()
+            logger.info(f"Data loaded successfully: {df.shape}")
             
-            # Train multiple models
-            await self._train_random_forest(df)
-            await self._train_xgboost(df)
-            await self._train_neural_network(df)
+            # Train multiple models with error handling
+            try:
+                await self._train_random_forest(df)
+                logger.info("Random Forest model trained successfully")
+            except Exception as e:
+                logger.error(f"Random Forest training failed: {str(e)}")
+            
+            try:
+                await self._train_xgboost(df)
+                logger.info("XGBoost model trained successfully")
+            except Exception as e:
+                logger.error(f"XGBoost training failed: {str(e)}")
+            
+            try:
+                await self._train_neural_network(df)
+                logger.info("Neural Network model trained successfully")
+            except Exception as e:
+                logger.error(f"Neural Network training failed: {str(e)}")
             
             # Select best model
             await self._select_best_model()
             
             self.models_loaded = True
+            logger.info("All ML models initialized successfully")
             logger.info("All ML models initialized successfully")
             
         except Exception as e:
