@@ -69,7 +69,16 @@ async def startup_event():
     """Initialize database and load models on startup"""
     try:
         init_db()
-        await ml_service.initialize_models()
+        logger.info("Database initialized successfully")
+        
+        # Try to load ML models, but don't fail if they don't load
+        try:
+            await ml_service.initialize_models()
+            logger.info("ML models loaded successfully")
+        except Exception as ml_error:
+            logger.warning(f"ML models failed to load: {str(ml_error)}")
+            logger.info("Continuing without ML models - will use fallback predictions")
+        
         logger.info("Backend services initialized successfully")
     except Exception as e:
         logger.error(f"Startup error: {str(e)}")
